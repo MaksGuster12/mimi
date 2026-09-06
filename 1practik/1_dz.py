@@ -181,9 +181,9 @@ while True:
                 time3 = time.perf_counter() - start
                 times_3.append(time3)
             plt.figure(figsize=(10, 6))
-            plt.plot(sizes, times_1, 'o-', label='Python-цикл')
-            plt.plot(sizes, times_2, 's-', label='np.vectorize')
-            plt.plot(sizes, times_3, '^-', label='Векторизованный NumPy')
+            plt.plot(sizes, times_1, label='Обычный цикл')
+            plt.plot(sizes, times_2, label='np.vectorize')
+            plt.plot(sizes, times_3, label='Векторизованный NumPy')
             plt.xscale('log')
             plt.yscale('log')
             plt.xlabel('Размер массива')
