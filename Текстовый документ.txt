@@ -1,0 +1,121 @@
+Шпаргалка (Windows / Linux)
+
+Windows: .\gradlew.bat, Linux: ./gradlew (один раз chmod +x gradlew). Папки в Linux: mkdir -p, слэши /.
+
+Подготовка
+Создай папку lab и в ней три подпапки:
+mkdir lab; cd lab
+mkdir money-library mvn-repo money-app
+Скопируй gradlew, gradlew.bat и папку gradle в money-library и в money-app.
+I. money-library
+cd money-library
+.\gradlew.bat init
+
+Ответы: basic, Groovy, имя по умолчанию, no.
+
+Открой Money.java, найди package ...; и создай папки по пакету:
+mkdir src\main\java\com\practicalunittesting\chp03\money
+
+Положи туда Money.java.
+
+build.gradle:
+groovy
+plugins {
+    id 'java'
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation 'com.google.guava:guava:33.4.0-jre'
+}
+Проверка и документация:
+.\gradlew.bat build
+.\gradlew.bat javadoc
+II. Тесты
+Положи файлы тестов (не в main!) сюда:
+mkdir src\test\java\com\practicalunittesting\chp03\money
+Дополни build.gradle:
+groovy
+dependencies {
+    implementation 'com.google.guava:guava:33.4.0-jre'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+}
+test {
+    useJUnitPlatform()
+}
+Запуск:
+.\gradlew.bat test
+
+Отчёт: build\reports\tests\test\index.html.
+
+III. Публикация
+В plugins добавь id 'maven-publish', а в конец build.gradle:
+groovy
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'com.practicalunittesting.chp03'
+            artifactId = 'money'
+            version = '1.0'
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = uri('../mvn-repo')
+        }
+    }
+}
+Публикация:
+.\gradlew.bat build
+.\gradlew.bat publish
+
+Проверь, что в mvn-repo\com\practicalunittesting\chp03\money\1.0\ есть money-1.0.jar и .pom.
+
+IV. money-app
+cd ..\money-app
+.\gradlew.bat init
+
+Ответы те же: basic, Groovy, no.
+
+В settings.gradle добавь:
+groovy
+include 'greeter-library'
+include 'app'
+Создай папки:
+mkdir greeter-library\src\main\java
+mkdir app\src\main\kotlin
+Положи Greeter.java в greeter-library\src\main\java\, App.kt в app\src\main\kotlin\ (по package, если нужно).
+greeter-library\build.gradle:
+groovy
+plugins {
+    id 'java'
+}
+app\build.gradle:
+groovy
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.9.25'
+    id 'application'
+}
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('../../mvn-repo')
+    }
+}
+dependencies {
+    implementation 'com.practicalunittesting.chp03:money:1.0'
+    implementation project(':greeter-library')
+}
+application {
+    mainClass = 'money.app.App'
+}
+
+mainClass = package + класс с main (смотри App.kt).
+
+Сборка и запуск:
+.\gradlew.bat build
+.\gradlew.bat run
